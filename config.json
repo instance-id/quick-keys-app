@@ -1,6 +1,7 @@
 {
     "settings": {
-        "orientation": 180,
+        "welcome_text": "Sup yo? Enjoy",
+        "orientation": 180, // - 0, 90, 180, 270
         "notification_path": "../notification"
     },
     "buttons": {

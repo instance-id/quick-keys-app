@@ -15,6 +15,7 @@ const notification = require('./notification')
 let conf: any;
 let deviceFound = false;
 let device: XencelabsQuickKeys;
+let orientation: XencelabsQuickKeysDisplayOrientation;
 
 // --| Sleep for duration -----------------------
 function sleep(time: number | undefined) {
@@ -69,7 +70,14 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     qkDevice.on('error', (error) => { console.error(error) });
 
     // --| Set device orientation -----
-    await qkDevice.setDisplayOrientation(XencelabsQuickKeysDisplayOrientation.Rotate180);
+    switch (conf.settings.orientation) {
+        case 0: orientation = XencelabsQuickKeysDisplayOrientation.Rotate0; break;
+        case 90: orientation = XencelabsQuickKeysDisplayOrientation.Rotate90; break;
+        case 180: orientation = XencelabsQuickKeysDisplayOrientation.Rotate180; break;
+        case 270: orientation = XencelabsQuickKeysDisplayOrientation.Rotate270; break;
+        default: break;
+    }
+    await qkDevice.setDisplayOrientation(orientation);
 
     // --| Set button text ------------
     try {
@@ -78,9 +86,27 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
         }
     } catch (error) { console.error(error); exit(1); };
 
+    // --| Display welcome message ----
+    await qkDevice.showOverlayText(4, conf.settings.welcome_text);
+
     // --| Set wheel color ------------
     var color = conf.wheel.color;
-    await qkDevice.setWheelColor(color[0], color[1], color[2])
+    var red = [255, 0, 0];
+    var colors = [
+        { color: red, duration: 0 },
+        { color: [color[0], color[1], color[2]], duration: 200 },
+        { color: red, duration: 400 },
+        { color: [color[0], color[1], color[2]], duration: 600 },
+        { color: red, duration: 800 },
+        { color: [color[0], color[1], color[2]], duration: 1000 },
+    ];
+
+    colors.forEach(async (c) => {
+        await sleep(c.duration).then(async () => {
+            await qkDevice.setWheelColor(c.color[0], c.color[1], c.color[2]);
+        })
+    });
+
     input.start();
 
     input.on('notification', async (data: any) => {

@@ -39,5 +39,8 @@
     "tsd": "^0.22.0",
     "tslib": "^2.3.1",
     "usb": "^2.3.1"
+  },
+  "bin": {
+    "quick-keys-app": "./dist/index.js"
   }
 }
