@@ -1,0 +1,43 @@
+{
+  "name": "quick-keys-app",
+  "version": "1.0.0",
+  "description": "An app for Xencelabs QuickKeys to run whatever system commands, which are assigned via config file.",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf dist && yarn build:main",
+    "build:main": "tsc -p tsconfig.build.json",
+    "start": "yarn run build && node dist/index.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run test && npm run prettier-format && npm run lint"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@sofie-automation/code-standard-preset": "~2.0",
+    "@types/node": "^18.7.8",
+    "@types/node-hid": "^1.3.1",
+    "concurrently": "^7.1.0",
+    "cross-env": "^7.0.3",
+    "jest": "^27.5.1",
+    "lerna": "^4.0.0",
+    "open-cli": "^7.0.1",
+    "ts-jest": "^27.1.4",
+    "ts-loader": "^9.2.8",
+    "ts-node": "^9.1.1",
+    "typescript": "~4.5"
+  },
+  "dependencies": {
+    "@xencelabs-quick-keys/node": "^0.4.0",
+    "color-lerp": "^1.0.5",
+    "fbbk-json": "0.0.8",
+    "json5": "^2.1.0",
+    "node-hid": "^2.1.1",
+    "tsd": "^0.22.0",
+    "tslib": "^2.3.1",
+    "usb": "^2.3.1"
+  }
+}
