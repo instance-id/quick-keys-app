@@ -10,8 +10,6 @@ const config = require('./config')
 const commands = require('./commands')
 const notification = require('./notification')
 
-// let term = new input.EventEmitter()
-
 let conf: any;
 let deviceFound = false;
 let device: XencelabsQuickKeys;
@@ -90,15 +88,17 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     await qkDevice.showOverlayText(4, conf.settings.welcome_text);
 
     // --| Set wheel color ------------
-    var color = conf.wheel.color;
-    var red = [255, 0, 0];
-    var colors = [
+    let color = conf.wheel.color;
+    let red = [255, 0, 0];
+    let cst = [color[0], color[1], color[2]]
+
+    let colors = [
         { color: red, duration: 0 },
-        { color: [color[0], color[1], color[2]], duration: 200 },
+        { color: cst, duration: 200 },
         { color: red, duration: 400 },
-        { color: [color[0], color[1], color[2]], duration: 600 },
+        { color: cst, duration: 600 },
         { color: red, duration: 800 },
-        { color: [color[0], color[1], color[2]], duration: 1000 },
+        { color: cst, duration: 1000 },
     ];
 
     colors.forEach(async (c) => {
