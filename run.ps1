@@ -6,7 +6,7 @@ try {
 
     import-module nvm
     Set-NodeVersion
-    yarn run start
+    pnpm run start
 } finally {
     pop-location
 }

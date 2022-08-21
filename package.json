@@ -4,9 +4,9 @@
   "description": "An app for Xencelabs QuickKeys to run whatever system commands, which are assigned via config file.",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && yarn build:main",
+    "build": "rimraf dist && pnpm build:main",
     "build:main": "tsc -p tsconfig.build.json",
-    "start": "yarn run build && node dist/index.js"
+    "start": "pnpm run build && node dist/index.js"
   },
   "husky": {
     "hooks": {
@@ -31,8 +31,10 @@
     "typescript": "~4.5"
   },
   "dependencies": {
+    "@xencelabs-quick-keys/core": "^0.4.0",
     "@xencelabs-quick-keys/node": "^0.4.0",
     "color-lerp": "^1.0.5",
+    "eventemitter3": "^4.0.7",
     "fbbk-json": "0.0.8",
     "json5": "^2.1.0",
     "node-hid": "^2.1.1",
@@ -42,5 +44,9 @@
   },
   "bin": {
     "quick-keys-app": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=10",
+    "pnpm": ">=3"
   }
 }
