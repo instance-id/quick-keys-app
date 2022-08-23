@@ -1,20 +1,15 @@
-import { exec } from "child_process";
+
+const util = require('util');
+const exec = util.promisify(require('node:child_process').exec);
 
 // --| Run Command ------------------------------
-function runCommand(command: string) {
-    exec(command, (err: any, _stdout: any, _stderr: any) => {
-        if (err) {
-            console.log(err)
-        }
+async function runCommand(command: string) {
+    var output: string = "";
 
-        if (_stdout) {
-            console.log(_stdout)
-        }
-
-        if (_stderr) {
-            console.log(_stderr)
-        }
-    });
+    const { stdout, stderr } = await exec(command);
+    if (stderr) { console.log(stderr) }
+    if (stdout) { output = stdout; }
+    return output;
 }
 
 module.exports = { runCommand };

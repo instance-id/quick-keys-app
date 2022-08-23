@@ -2,11 +2,13 @@
     "settings": {
         "welcome_text": "Sup yo? Enjoy",
         "orientation": 180, // - 0, 90, 180, 270
-        "notification_path": "../notification"
+        "notification_path": "../notification",
+        "sleep_timeout": 20, // minutes
+        "wheel_step": 3
     },
     "buttons": {
         "0": {
-            "text": "_____",
+            "text": "_____", // Button Text cannot be more than 8 characters
             "command": "echo 'Button 0 pressed'",
             "press_overlay": {
                 "duration": 1,
@@ -71,7 +73,7 @@
         },
         "8": { // -- Rectangle Button
             "text": "", // -- No display screen
-            "command": "echo 'Button 8 pressed'",
+            "command": "reload_config",
             "press_overlay": {
                 "duration": 1,
                 "text": "Command issued"
@@ -88,16 +90,20 @@
     },
     "wheel": {
         // -- Wheel initial color
-        "color": [ 255, 0, 180 ],
+        "color": [
+            255,
+            0,
+            180
+        ],
         "left": {
-            "command": "amixer set Master 2%- > /dev/null 2>&1",
+            "command": "amixer set Master 2%- > /dev/null 2>&1; awk -F'[][]' '/Left:/ { print $2 }' \\<\\(amixer sget Master\\)",
             "press_overlay": {
                 "duration": 1,
                 "text": "Volume Down"
             }
         },
         "right": {
-            "command": "amixer set Master 2%+ > /dev/null 2>&1",
+            "command": "amixer set Master 2%+ > /dev/null 2>&1; awk -F'[][]' '/Left:/ { print $2 }' <(amixer sget Master)",
             "press_overlay": {
                 "duration": 1,
                 "text": "Volume Up"

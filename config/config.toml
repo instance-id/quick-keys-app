@@ -1,0 +1,115 @@
+[settings]
+welcome_text = "Sup yo? Enjoy"
+orientation = 180
+notification_path = "../notification"
+sleep_timeout = 20
+wheel_step = 3
+
+# --| Button 0 -------------------
+[buttons.0]
+text = "_____"
+command = "echo 'Button 0 pressed'"
+
+[buttons.0.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 1 -------------------
+[buttons.1]
+text = "_____"
+command = "echo 'Button 1 pressed'"
+
+[buttons.1.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 2 -------------------
+[buttons.2]
+text = "Script"
+command = "/home/mosthated/_dev/languages/pwsh/random/ps_test_1.ps1"
+
+[buttons.2.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 3 -------------------
+[buttons.3]
+text = "Password"
+command = "rofi-rbw -a copy"
+
+[buttons.3.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 4 -------------------
+[buttons.4]
+text = "_____"
+command = "echo 'Button 4 pressed'"
+
+[buttons.4.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 5 -------------------
+[buttons.5]
+text = "_____"
+command = "echo 'Button 5 pressed'"
+
+[buttons.5.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 6 -------------------
+[buttons.6]
+text = "_____"
+command = "echo 'Button 6 pressed'"
+
+[buttons.6.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 7 -------------------
+[buttons.7]
+text = "_____"
+command = "echo 'Button 7 pressed'"
+
+[buttons.7.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 8 -------------------
+[buttons.8]
+text = ""
+command = "reload_config"
+
+[buttons.8.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Button 9 -------------------
+[buttons.9]
+text = ""
+command = "echo 'Button 9 pressed'"
+
+[buttons.9.press_overlay]
+duration = 1
+text = "Command issued"
+
+# --| Wheel ----------------------
+[wheel]
+color = [255, 0, 180]
+
+[wheel.left]
+command = "amixer set Master 2%- > /dev/null 2>&1 && results=$(amixer sget Master | awk -F\"[][]\" '/Left:/ { print $2 }'); echo $results"
+
+[wheel.left.press_overlay]
+duration = 1
+text = "Volume Down"
+
+[wheel.right]
+command = "amixer set Master 2%+ > /dev/null 2>&1 && results=$(amixer sget Master | awk -F\"[][]\" '/Left:/ { print $2 }'); echo $results"
+
+
+[wheel.right.press_overlay]
+duration = 1
+text = "Volume Up"

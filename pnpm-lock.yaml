@@ -16,6 +16,7 @@ specifiers:
   lerna: ^4.0.0
   node-hid: ^2.1.1
   open-cli: ^7.0.1
+  toml: ^3.0.0
   ts-jest: ^27.1.4
   ts-loader: ^9.2.8
   ts-node: ^9.1.1
@@ -32,6 +33,7 @@ dependencies:
   fbbk-json: 0.0.8
   json5: 2.2.1
   node-hid: 2.1.1
+  toml: 3.0.0
   tsd: 0.22.0
   tslib: 2.4.0
   usb: 2.5.0
@@ -7525,6 +7527,10 @@ packages:
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
     dev: true
+
+  /toml/3.0.0:
+    resolution: {integrity: sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==}
+    dev: false
 
   /tough-cookie/2.5.0:
     resolution: {integrity: sha512-nlLsUzgm1kfLXSXfRZMc1KLAugd4hqJHDTvc2hDIwS3mZAfMEuMbc03SujMF+GEcpaX/qboeycw6iO8JwVv2+g==}
