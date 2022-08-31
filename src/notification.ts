@@ -5,31 +5,46 @@ const fs = require('node:fs');
 const JSON5 = require('json5');
 const fsPromises = require('node:fs/promises');
 
-let notification: any;
-let device: XencelabsQuickKeys;
+let notification: string;
+// let device: XencelabsQuickKeys;
 let previousMTime = new Date(0);
 var colorLerp = require('color-lerp');
 
 // --| Set Device -------------------------------
-function setDevice(this: any, device: XencelabsQuickKeys) {
-    this.device = device;
-}
+// function setDevice(this: any, device: XencelabsQuickKeys) {
+//     this.device = device;
+// }
 
 // --| Sleep for duration -----------------------
 function sleep(time: number | undefined) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 
+async function readNotification(dev: XencelabsQuickKeys) {
+    var notifyData = await fsPromises.readFile(notification);
+    var notifyJson = JSON5.parse(notifyData);
+    handleNotification({ message: notifyJson.text, duration: notifyJson.duration, device: dev });
+}
+
+interface namedParamaters{
+    message: string,
+    duration?: number,
+    color1?: string,
+    color2?: string,
+    device: XencelabsQuickKeys
+}
+
 // --| Read Notification ------------------------
-async function readNotification() {
+async function handleNotification({message, duration, color1, color2, device}: namedParamaters) {
+    let start_color = color1 ? color1 : "hsl(0, 100%, 50%)";
+    let end_color = color2 ? color2 : "hsl(317, 100%, 50%)";
+    let duration_value = duration ? duration : 4;
+
     try {
-        var notifyData = await fsPromises.readFile(notification);
-        var notifyJson = JSON5.parse(notifyData);
+        await device.showOverlayText(duration_value, message)
 
-        await device.showOverlayText(notifyJson.duration, notifyJson.text)
-
-        var lerp_start = colorLerp(notifyJson.start_color, notifyJson.end_color, 50, 'rgb');
-        var lerp_end = colorLerp(notifyJson.end_color, notifyJson.start_color, 50, 'rgb');
+        var lerp_start = colorLerp(start_color, end_color, 50, 'rgb');
+        var lerp_end = colorLerp(end_color, start_color, 50, 'rgb');
 
         var total = 49;
         var time = 0;
@@ -75,8 +90,10 @@ async function readNotification() {
 }
 
 // --| Start Watcher ----------------------------
-function startWatcher(notification: any) {
-    let notifPath = path.join(__dirname, notification);
+function startWatcher(notification_file: string, device: XencelabsQuickKeys) {
+    let notifPath = path.join(__dirname, notification_file);
+    notification = notifPath;
+    let dev = device;
 
     // --| Watch for changes to notification file
     fs.watch(notifPath, async (_event: any, filename: any) => {
@@ -87,9 +104,9 @@ function startWatcher(notification: any) {
             }
 
             previousMTime = stats.mtime;
-            readNotification();
+            readNotification(dev);
         }
     });
 }
 
-module.exports = { setDevice, readNotification, startWatcher };
+module.exports = { /* setDevice, */ handleNotification, startWatcher };

@@ -13,6 +13,7 @@ const notification = require('./notification')
 
 let conf: any;
 let deviceFound = false;
+let batteryLevel: number = -1;
 let device: XencelabsQuickKeys;
 let orientation: XencelabsQuickKeysDisplayOrientation;
 let wheelSpeed: XencelabsQuickKeysWheelSpeed;
@@ -77,6 +78,8 @@ async function setDeviceSettings(customMsg: string = "") {
 
     // --| Display welcome message ----
     let overlayText = (customMsg === "" ? conf.settings.welcome_text : customMsg);
+    if (batteryLevel != -1) { overlayText = `${overlayText} - Battery: ${batteryLevel}%` }
+
     await device.showOverlayText(4, overlayText).then(async () => {
         // --| Set button text ------------
         try {
@@ -96,7 +99,8 @@ async function setDeviceSettings(customMsg: string = "") {
     });;
 }
 
-// start listening for devices
+// --| Device Connected Functionality ------
+// --|--------------------------------------
 XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     await qkDevice.startData();
 
@@ -107,8 +111,30 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     device = qkDevice;
 
     // --| Notification listener -----------
-    notification.setDevice(device);
-    notification.startWatcher(conf.settings.notification_path);
+    // notification.setDevice(device);
+    notification.startWatcher(conf.settings.notification_path, qkDevice);
+
+    // --| Check battery status ------------
+    qkDevice.on('battery', async (battery) => {
+        batteryLevel = battery.valueOf();
+        let msg: string = "";
+
+        switch (batteryLevel) {
+            case 90: msg = "Battery level is 90%"; break;
+            case 75: msg = "Battery level is 75%"; break;
+            case 50: msg = "Battery level is 50%"; break;
+            case 25: msg = "Battery level is 25%"; break;
+        }
+
+        if(batteryLevel <= 10) {
+            await device.showOverlayText(4, `Battery is low: ${batteryLevel}%`);
+        }
+
+        if (msg != "") {
+            notification.handleNotification({ message: msg, duration: 4, device: qkDevice });
+            console.log(`Current Battery: ${batteryLevel}`);
+        }
+    })
 
     // --| Perform button down action ------
     qkDevice.on('down', (_keyIndex) => { return; });

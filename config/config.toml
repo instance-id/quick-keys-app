@@ -2,7 +2,7 @@
 welcome_text = "Sup yo? Enjoy"
 orientation = 180
 notification_path = "../notification"
-sleep_timeout = 20
+sleep_timeout = 240 # -- 240 seems to be the maximum
 wheel_step = 3
 
 # --| Button 0 -------------------

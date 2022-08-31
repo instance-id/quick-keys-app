@@ -1,12 +1,17 @@
-#!/bin/pwsh
+#!/bin/pwsh -nologo
+
+$processes = Get-Process
+
+$log = "${HOME}/quickkeys_runner.log"
 
 try {
-    $currentPath = $PSScriptRoot
-    push-location $currentPath
+    if (!($processes | where ProcessName -CContains 'node')) {
+        $currentPath = $PSScriptRoot
+        push-location $currentPath
 
-    import-module nvm
-    Set-NodeVersion
-    pnpm run start
+        $command = 'pnpm run start'
+        bash -c "screen -S quick_keys -d -m $command 2>&1>$log"
+    }
 } finally {
     pop-location
 }
