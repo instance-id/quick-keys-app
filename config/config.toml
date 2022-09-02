@@ -2,13 +2,13 @@
 welcome_text = "Sup yo? Enjoy"
 orientation = 180
 notification_path = "../notification"
-sleep_timeout = 240 # -- 240 seems to be the maximum
+sleep_timeout = 240                   # -- 240 seems to be the maximum
 wheel_step = 3
 
 # --| Button 0 -------------------
 [buttons.0]
-text = "_____"
-command = "echo 'Button 0 pressed'"
+text = "PC +2%"
+command = "/mnt/x/GitHub/instance-id/typescript/quick-keys-app/scripts/vol_up.sh > /dev/null 2>&1"
 
 [buttons.0.press_overlay]
 duration = 1
@@ -43,8 +43,8 @@ text = "Command issued"
 
 # --| Button 4 -------------------
 [buttons.4]
-text = "_____"
-command = "echo 'Button 4 pressed'"
+text = "PC -2%"
+command = "/mnt/x/GitHub/instance-id/typescript/quick-keys-app/scripts/vol_down.sh > /dev/null 2>&1"
 
 [buttons.4.press_overlay]
 duration = 1
@@ -70,12 +70,14 @@ text = "Command issued"
 
 # --| Button 7 -------------------
 [buttons.7]
-text = "_____"
-command = "echo 'Button 7 pressed'"
+text = "Source"
+command = "current_output=$(/mnt/x/GitHub/instance-id/typescript/quick-keys-app/scripts/change_output.ps1); echo $current_output"
 
 [buttons.7.press_overlay]
-duration = 1
-text = "Command issued"
+duration = 2
+# -- Response with %% has the symbols replaced with the output of the command ran
+# -- If response is too long, it will be truncated
+text = "Source Selected: %output%.%"
 
 # --| Button 8 -------------------
 [buttons.8]
@@ -84,7 +86,7 @@ command = "reload_config"
 
 [buttons.8.press_overlay]
 duration = 1
-text = "Command issued"
+text = "Config Reloaded"
 
 # --| Button 9 -------------------
 [buttons.9]
@@ -93,7 +95,7 @@ command = "echo 'Button 9 pressed'"
 
 [buttons.9.press_overlay]
 duration = 1
-text = "Command issued"
+text = "Wheel Button"
 
 # --| Wheel ----------------------
 [wheel]

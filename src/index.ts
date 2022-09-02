@@ -6,6 +6,9 @@ import {
 } from '@xencelabs-quick-keys/node'
 import { exit } from 'process'
 
+const path = require('path');
+const fsPromises = require('node:fs/promises');
+
 const input = require('./input')
 const config = require('./config')
 const commands = require('./commands')
@@ -126,7 +129,7 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
             case 25: msg = "Battery level is 25%"; break;
         }
 
-        if(batteryLevel <= 10) {
+        if (batteryLevel <= 10) {
             await device.showOverlayText(4, `Battery is low: ${batteryLevel}%`);
         }
 
@@ -141,20 +144,62 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
 
     // --| Perform button up action --------
     qkDevice.on('up', async (keyIndex) => {
-        // --| If command is not set, return
-        if (conf.buttons[keyIndex].command == "") { return; }
+        try {
+            // --| If command is not set, return
+            if (conf.buttons[keyIndex].command == "") { return; }
 
-        if (conf.buttons[keyIndex].command == "reload_config") {
-            conf = await config.readConfig();
-            await setDeviceSettings("Reloading Config");
-            return;
+            if (conf.buttons[keyIndex].command == "reload_config") {
+                conf = await config.readConfig();
+                await setDeviceSettings("Reloading Config");
+                return;
+            }
+
+            let output = await commands.runCommand(conf.buttons[keyIndex].command);
+            if (output != "") {
+                output = output.toString();
+            }
+
+            // --| If overlay text is not set, return
+            if (conf.buttons[keyIndex].press_overlay.text == "") { return; }
+            let overlay_text = conf.buttons[keyIndex].press_overlay.text;
+
+            if (overlay_text.includes("%output%") && output != "") {
+                let tmpOutput = "";
+                let tmpReplace = "";
+
+                if (overlay_text.includes("%output%.%")) {
+                    tmpReplace = "%output%.%";
+                    let output_arr = output.split(".");
+                    tmpOutput = output_arr[output_arr.length - 1];
+                } else {
+                    tmpReplace = "%output%";
+                    tmpOutput = output;
+                }
+                let textLen = overlay_text.length;
+                let outputLen = tmpOutput.length;
+                let totalLen = textLen + outputLen;
+
+                if (totalLen > 32) {
+                    let diff = totalLen - 32;
+                    output = output.substring(textLen, outputLen - diff);
+                }
+
+                overlay_text = overlay_text.replace(tmpReplace, tmpOutput);
+            }
+
+            await qkDevice.showOverlayText(conf.buttons[keyIndex].press_overlay.duration, overlay_text);
+        } catch (e: unknown) {
+            let msg = ""
+            if (typeof e === "string") {
+                msg = e.toUpperCase()
+            } else if (e instanceof Error) {
+                msg = e.message
+            }
+
+            console.error(msg);
+            let logFile = path.join(__dirname, "error.log");
+            fsPromises.appendFile(logFile, msg.toString());
         }
-
-        commands.runCommand(conf.buttons[keyIndex].command);
-
-        // --| If overlay text is not set, return
-        if (conf.buttons[keyIndex].press_overlay.text == "") { return; }
-        await qkDevice.showOverlayText(conf.buttons[keyIndex].press_overlay.duration, conf.buttons[keyIndex].press_overlay.text);
     });
 
     // --| Perform Wheel actions -----------
