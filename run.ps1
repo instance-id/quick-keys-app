@@ -11,6 +11,7 @@ try {
 
         $command = 'pnpm run start'
         bash -c "screen -S quick_keys -d -m $command 2>&1>$log"
+        echo "Started quick keys"
     }
 } finally {
     pop-location

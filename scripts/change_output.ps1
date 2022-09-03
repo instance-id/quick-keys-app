@@ -1,12 +1,7 @@
-#!/bin/pwsh -noProfile
+#!/usr/bin/env -S pwsh -noProfile -nologo
 
-function GetAllSinks() {
-    return $(pactl list short sinks | cut -f 2).Trim(" `t`n`r")
-}
-
-function GetDefaultSink() {
-    return $(pactl info | grep 'Default Sink' | cut -d':' -f 2).Trim(" `t`n`r")
-}
+function GetAllSinks() {return $(pactl list short sinks | cut -f 2).Trim(" `t`n`r")}
+function GetDefaultSink() {return $(pactl info | grep 'Default Sink' | cut -d':' -f 2).Trim(" `t`n`r")}
 
 $getDefaultSink = GetDefaultSink
 $sinks = GetAllSinks
