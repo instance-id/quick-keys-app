@@ -107,6 +107,11 @@ async function setDeviceSettings(customMsg: string = "") {
 XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     await qkDevice.startData();
 
+    // --| Connected Notification ----------
+    let notify_path = path.join(__dirname, "../", "scripts/notify-send.sh");
+    let system_notify = `${notify_path} 'QuickKeys' 'QuickKeys Connected!'`;
+    await commands.runCommand(system_notify);
+
     if (qkDevice === undefined) { console.log('Error locating device...'); exit(0); }
     conf = await config.readConfig();
 
@@ -248,7 +253,10 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
 })
 
 // --| Run upon device disconnect ---------------
-XencelabsQuickKeysManagerInstance.on('disconnect', (qkDevice) => {
+XencelabsQuickKeysManagerInstance.on('disconnect', async (qkDevice) => {
+    let notify_path = path.join(__dirname, "../", "scripts/notify-send.sh");
+    let system_notify = `${notify_path} 'QuickKeys' 'QuickKeys Disconnected'`;
+    await commands.runCommand(system_notify);
     console.log('disconnected %s', qkDevice.deviceId)
     exit(0)
 })

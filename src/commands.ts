@@ -9,10 +9,6 @@ async function runCommand(command: string) {
     const { stdout, stderr } = await exec(command);
     if (stderr) { console.log(stderr) }
     if (stdout) { output = stdout.toString(); }
-<<<<<<< HEAD
-=======
-    console.log("output: " + output);
->>>>>>> main
     return output;
 }
 
