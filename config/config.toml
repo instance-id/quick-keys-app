@@ -8,11 +8,11 @@ wheel_step = 3
 # --| Button 0 -------------------
 [buttons.0]
 text = "PC +2%"
-command = "/mnt/x/GitHub/instance-id/typescript/quick-keys-app/scripts/vol_up.ps1 > /dev/null 2>&1"
+command = "result=$(/mnt/x/GitHub/instance-id/typescript/quick-keys-app/scripts/vol_up.ps1); echo $result"
 
 [buttons.0.press_overlay]
 duration = 1
-text = "Command issued"
+text = "Volume Up: %output%"
 
 # --| Button 1 -------------------
 [buttons.1]
@@ -44,11 +44,11 @@ text = "Command issued"
 # --| Button 4 -------------------
 [buttons.4]
 text = "PC -2%"
-command = "/mnt/x/GitHub/instance-id/typescript/quick-keys-app/scripts/vol_down.ps1 > /dev/null 2>&1"
+command = "result=$(/mnt/x/GitHub/instance-id/typescript/quick-keys-app/scripts/vol_down.ps1); echo $result"
 
 [buttons.4.press_overlay]
 duration = 1
-text = "Command issued"
+text = "Volume Down: %output%"
 
 # --| Button 5 -------------------
 [buttons.5]
