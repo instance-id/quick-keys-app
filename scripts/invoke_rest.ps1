@@ -2,8 +2,11 @@
 
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingCmdletAliases', '')]
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-Param (
-    [string]$power = 'off'
+
+# -- line_source, wax_heater
+param (
+    [string]$power = 'off',
+    [string]$endpoint = 'line_source'
 )
 
 $basePath = $PSScriptRoot
@@ -13,4 +16,5 @@ $body = @{ 'state' = "${power}" } | ConvertTo-Json
 $header = @{'Content-Type' = 'application/json' }
 
 [Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
-$null = Invoke-RestMethod -Uri "$($config.restAddress)/line_source" -Method 'Post' -Body $body -Headers $header | ConvertTo-HTML
+$response = Invoke-RestMethod -Uri "$($config.restAddress)/${endpoint}" -Method 'Post' -Body $body -Headers $header | ConvertTo-Json
+echo $response

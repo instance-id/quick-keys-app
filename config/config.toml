@@ -61,12 +61,12 @@ text = "Command issued"
 
 # --| Button 6 -------------------
 [buttons.6]
-text = "_____"
-command = "echo 'Button 6 pressed'"
+text = "GoodSmell"
+command = "current_output=$(/mnt/x/GitHub/instance-id/typescript/quick-keys-app/scripts/toggle_wax_heater.ps1); echo $current_output"
 
 [buttons.6.press_overlay]
-duration = 1
-text = "Command issued"
+duration = 2
+text = "Device: %output%"
 
 # --| Button 7 -------------------
 [buttons.7]
