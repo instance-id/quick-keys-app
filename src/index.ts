@@ -84,7 +84,7 @@ async function setDeviceSettings(customMsg: string = "") {
     let overlayText = (customMsg === "" ? conf.settings.welcome_text : customMsg);
     if (batteryLevel != -1) { overlayText = `${overlayText} - Battery: ${batteryLevel}%` }
 
-    await device.showOverlayText(4, overlayText).then(async () => {
+    await device.showOverlayText(1, overlayText).then(async () => {
         // --| Set button text ------------
         try {
             for (let button in conf.buttons) {
