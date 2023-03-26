@@ -28,7 +28,8 @@ function sleep(time: number | undefined) {
 
 // --| Check if device was found ----------------
 async function checkDevice() {
-    await sleep(50).then(async () => {
+    sleep(100)
+    await sleep(100).then(async () => {
         if (!deviceFound) {
             console.log('No device found. Is it powered on?'); exit(0);
         }
