@@ -160,6 +160,13 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
                 return;
             }
 
+	    if (conf.buttons[keyIndex][command].match(/^config=/)) {
+                var cf = conf.buttons[keyIndex][command].replace(/^config=/,"")
+                conf = await config.readConfig({configPath:cf});
+                await setDeviceSettings("Reloading Config");
+                return;
+            }
+
             let output = await commands.runCommand(conf.buttons[keyIndex].command);
             if (output != "") {
                 output = output.toString();
