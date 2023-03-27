@@ -28,7 +28,8 @@ function sleep(time: number | undefined) {
 
 // --| Check if device was found ----------------
 async function checkDevice() {
-    await sleep(50).then(async () => {
+    sleep(100)
+    await sleep(100).then(async () => {
         if (!deviceFound) {
             console.log('No device found. Is it powered on?'); exit(0);
         }
@@ -83,7 +84,7 @@ async function setDeviceSettings(customMsg: string = "") {
     let overlayText = (customMsg === "" ? conf.settings.welcome_text : customMsg);
     if (batteryLevel != -1) { overlayText = `${overlayText} - Battery: ${batteryLevel}%` }
 
-    await device.showOverlayText(4, overlayText).then(async () => {
+    await device.showOverlayText(1, overlayText).then(async () => {
         // --| Set button text ------------
         try {
             for (let button in conf.buttons) {
@@ -155,6 +156,13 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
 
             if (conf.buttons[keyIndex].command == "reload_config") {
                 conf = await config.readConfig();
+                await setDeviceSettings("Reloading Config");
+                return;
+            }
+
+	    if (conf.buttons[keyIndex][command].match(/^config=/)) {
+                var cf = conf.buttons[keyIndex][command].replace(/^config=/,"")
+                conf = await config.readConfig({configPath:cf});
                 await setDeviceSettings("Reloading Config");
                 return;
             }
