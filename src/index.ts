@@ -21,6 +21,9 @@ let device: XencelabsQuickKeys;
 let orientation: XencelabsQuickKeysDisplayOrientation;
 let wheelSpeed: XencelabsQuickKeysWheelSpeed;
 
+let currentKeys: number[] = []
+
+
 // --| Sleep for duration -----------------------
 function sleep(time: number | undefined) {
     return new Promise((resolve) => setTimeout(resolve, time));
@@ -146,15 +149,27 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     })
 
     // --| Perform button down action ------
-    qkDevice.on('down', (_keyIndex) => { return; });
+    qkDevice.on('down', (keyIndex) => { 
+	    currentKeys.push(keyIndex)
+	    console.log(`Key down:${keyIndex} Chord:${currentKeys}`);
+	    return;
+    });
 
     // --| Perform button up action --------
     qkDevice.on('up', async (keyIndex) => {
+	currentKeys = currentKeys.filter(x=> x != keyIndex);
+	console.log(`Key up:${keyIndex} Chord:${currentKeys}`);
         try {
-            // --| If command is not set, return
-            if (conf.buttons[keyIndex].command == "") { return; }
+	    // We will look for "command" or if there are other keys held... command_key_key...
+	    var command = currentKeys.length > 0 ? `command_${currentKeys.sort().join("_")}` : "command"
 
-            if (conf.buttons[keyIndex].command == "reload_config") {
+	    console.log(`command search ${command} ${conf.buttons[keyIndex][command]}`)
+	    console.log(conf.buttons[keyIndex])
+
+            // --| If command is not set, return
+            if (conf.buttons[keyIndex][command] == "") { return; }
+
+            if (conf.buttons[keyIndex][command] == "reload_config") {
                 conf = await config.readConfig();
                 await setDeviceSettings("Reloading Config");
                 return;
@@ -167,7 +182,7 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
                 return;
             }
 
-            let output = await commands.runCommand(conf.buttons[keyIndex].command);
+            let output = await commands.runCommand(conf.buttons[keyIndex][command]);
             if (output != "") {
                 output = output.toString();
             }
@@ -218,7 +233,9 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     // --| Perform Wheel actions -----------
     // --| Allows an array of commands -----
     qkDevice.on('wheel', async (e) => {
-        let cmd = conf.wheel[e].command;
+	// We will look for "command" or if there are other keys held... command_key_key...
+	var command = currentKeys.length > 0 ? `command_${currentKeys.sort().join("_")}` : "command"
+        let cmd = conf.wheel[e][command] || ":"
         if (Array.isArray(cmd)) {
             cmd.forEach(async (c) => {
                 let output = await commands.runCommand(c);
