@@ -22,6 +22,7 @@ let orientation: XencelabsQuickKeysDisplayOrientation;
 let wheelSpeed: XencelabsQuickKeysWheelSpeed;
 
 let currentKeys: number[] = []
+let clearKeys: number[] = []
 
 
 // --| Sleep for duration -----------------------
@@ -158,31 +159,46 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     // --| Perform button up action --------
     qkDevice.on('up', async (keyIndex) => {
 	currentKeys = currentKeys.filter(x=> x != keyIndex);
+	if (clearKeys.find(x=> x==keyIndex)) {
+	  clearKeys = clearKeys.filter(x=> x!= keyIndex);
+	  return;
+	}
 	console.log(`Key up:${keyIndex} Chord:${currentKeys}`);
         try {
 	    // We will look for "command" or if there are other keys held... command_key_key...
-	    var command = currentKeys.length > 0 ? `command_${currentKeys.sort().join("_")}` : "command"
+		// special suffix "_x" will cause keys to be cleared after use so a button
+		// can be used to chord *and* have a single press use.
+	    var commID = currentKeys.length > 0 ? `command_${currentKeys.sort().join("_")}` : "command"
 
-	    console.log(`command search ${command} ${conf.buttons[keyIndex][command]}`)
+	    // Process command prefix controls then runCommand
+	    // Prefix "CLEAR::" will cause the chord keys to be cleared on next "UP"
+	    // so that a button can be used for single press as well as part of chord
+            let cmd = conf.buttons[keyIndex][commID];
+	    if (cmd.match(/^CLEAR::/)) {
+		    cmd=cmd.replace(/^CLEAR::/,"");
+		    clearKeys=currentKeys;
+	    }
+
+	    console.log(`cmd search ${commID} ${cmd}`)
 	    console.log(conf.buttons[keyIndex])
 
             // --| If command is not set, return
-            if (conf.buttons[keyIndex][command] == "") { return; }
+            if (cmd == "") { return; }
 
-            if (conf.buttons[keyIndex][command] == "reload_config") {
+            if (cmd == "reload_config") {
                 conf = await config.readConfig();
                 await setDeviceSettings("Reloading Config");
                 return;
             }
 
-	    if (conf.buttons[keyIndex][command].match(/^config=/)) {
-                var cf = conf.buttons[keyIndex][command].replace(/^config=/,"")
+	    if (cmd.match(/^config=/)) {
+                var cf = cmd.replace(/^config=/,"")
                 conf = await config.readConfig({configPath:cf});
                 await setDeviceSettings("Reloading Config");
                 return;
             }
 
-            let output = await commands.runCommand(conf.buttons[keyIndex][command]);
+            let output = await commands.runCommand(cmd);
             if (output != "") {
                 output = output.toString();
             }
@@ -234,8 +250,16 @@ XencelabsQuickKeysManagerInstance.on('connect', async (qkDevice) => {
     // --| Allows an array of commands -----
     qkDevice.on('wheel', async (e) => {
 	// We will look for "command" or if there are other keys held... command_key_key...
-	var command = currentKeys.length > 0 ? `command_${currentKeys.sort().join("_")}` : "command"
-        let cmd = conf.wheel[e][command] || ":"
+	var commID = currentKeys.length > 0 ? `command_${currentKeys.sort().join("_")}` : "command"
+        let cmd = conf.wheel[e][commID] || ":"
+
+	// Process command prefix controls then runCommand
+	// Prefix "CLEAR::" will cause the chord keys to be cleared on next "UP"
+	// so that a button can be used for single press as well as part of chord
+	if (cmd.match(/^CLEAR::/)) {
+	    cmd=cmd.replace(/^CLEAR::/,"");
+	    clearKeys=currentKeys;
+	}
         if (Array.isArray(cmd)) {
             cmd.forEach(async (c) => {
                 let output = await commands.runCommand(c);
